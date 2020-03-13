@@ -42,6 +42,7 @@ public class GameMaster {
     }
 
     public void playTurns(int turns) {
+        System.out.println(this);
         for (int i = 0; i < turns; i++) {
             this.turn++;
             PairGenerator pairGenerator = new PairGenerator(this.getPeople());
