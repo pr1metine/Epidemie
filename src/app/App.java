@@ -5,9 +5,11 @@ import components.GameMasterCSV;
 public class App {
     public static void main(String[] args) throws Exception {
         System.out.println("Hello Java");
-        GameMasterCSV gameMasterCSV = new GameMasterCSV(1000000, 10, 0);
+        GameMasterCSV gameMasterCSV = new GameMasterCSV();
 
-        gameMasterCSV.playTurns(500);
+        System.out.println("Daten werden berechnet. Es dauert möglicherweise etwas.");
+
+        gameMasterCSV.playTurns(300);
 
         System.out.println("Done!");
     }

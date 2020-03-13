@@ -16,28 +16,16 @@ public class GameMaster {
 
     public PrintStream out;
 
+    public GameMaster() {
+        this.readCount();
+        this.initPeople();
+    }
+
     public GameMaster(int healthyCount, int infectedCount, int diseasedCount) {
-        this.healthyCount = healthyCount;
-        this.infectedCount = infectedCount;
-        this.diseasedCount = diseasedCount;
-        int total = healthyCount + infectedCount + diseasedCount;
-
-        this.people = new Person[total];
-
-        // Derzeitiger Index des Arrays people
-        int globalIndex = 0;
-
-        for (int i = 0; i < healthyCount; i++, globalIndex++) {
-            people[globalIndex] = new Person(HealthState.HEALTHY);
-        }
-
-        for (int i = 0; i < infectedCount; i++, globalIndex++) {
-            people[globalIndex] = new Person(HealthState.INFECTED);
-        }
-
-        for (int i = 0; i < diseasedCount; i++, globalIndex++) {
-            people[globalIndex] = new Person(HealthState.DISEASED);
-        }
+        this.setHealthyCount(healthyCount);
+        this.setInfectedCount(infectedCount);
+        this.setDiseasedCount(diseasedCount);
+        this.initPeople();
     }
 
     public void turn() {
@@ -68,16 +56,67 @@ public class GameMaster {
         }
     }
 
+    public void initPeople() {
+        int total = healthyCount + infectedCount + diseasedCount;
+        this.people = new Person[total];
+        // Derzeitiger Index des Arrays people
+        int globalIndex = 0;
+
+        for (int i = 0; i < healthyCount; i++, globalIndex++) {
+            people[globalIndex] = new Person(HealthState.HEALTHY);
+        }
+
+        for (int i = 0; i < infectedCount; i++, globalIndex++) {
+            people[globalIndex] = new Person(HealthState.INFECTED);
+        }
+
+        for (int i = 0; i < diseasedCount; i++, globalIndex++) {
+            people[globalIndex] = new Person(HealthState.DISEASED);
+        }
+    }
+
+    public void readCount() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Wie viele Gesunde soll es geben?");
+        this.setHealthyCount(sc.nextInt());
+        System.out.println("Wie viele Kranke soll es geben?");
+        this.setInfectedCount(sc.nextInt());
+        System.out.println("Wie viele Tote soll es bereits geben?");
+        this.setDiseasedCount(sc.nextInt());
+        sc.close();
+    }
+
+    /**
+     * @param healthyCount the healthyCount to set
+     */
+    public void setHealthyCount(int healthyCount) {
+        this.healthyCount = healthyCount >= 0 ? healthyCount : 0;
+    }
+
+    /**
+     * @param diseasedCount the diseasedCount to set
+     */
+    public void setDiseasedCount(int diseasedCount) {
+        this.diseasedCount = diseasedCount >= 0 ? diseasedCount : 0;
+    }
+
+    /**
+     * @param infectedCount the infectedCount to set
+     */
+    public void setInfectedCount(int infectedCount) {
+        this.infectedCount = infectedCount >= 0 ? infectedCount : 0;
+    }
+
     public void decrementCount(HealthState healthState) {
         switch (healthState) {
             case HEALTHY:
-                this.healthyCount--;
+                this.setHealthyCount(this.getHealthyCount() - 1);
                 break;
             case INFECTED:
-                this.infectedCount--;
+                this.setInfectedCount(this.getInfectedCount() - 1);
                 break;
             case DISEASED:
-                this.diseasedCount--;
+                this.setDiseasedCount(this.getDiseasedCount() - 1);
                 System.err.println(
                         "Something went wrong because there's a diseased person. Someone has been brought back to life.");
                 break;
@@ -158,16 +197,8 @@ public class GameMaster {
     }
 
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Wie viele Gesunde soll es geben?");
-        int healthyCount = sc.nextInt();
-        System.out.println("Wie viele Kranke soll es geben?");
-        int infectedCount = sc.nextInt();
-        System.out.println("Wie viele Tote soll es bereits geben?");
-        int diseasedCount = sc.nextInt();
-        sc.close();
 
-        GameMaster gameMaster = new GameMaster(healthyCount, infectedCount, diseasedCount);
+        GameMaster gameMaster = new GameMaster();
         System.out.println(gameMaster);
         // PairGenerator pairGenerator = new PairGenerator(gameMaster.getPeople());
 
