@@ -1,5 +1,6 @@
 package components;
 
+import java.io.PrintStream;
 import java.util.Scanner;
 
 /**
@@ -7,11 +8,13 @@ import java.util.Scanner;
  */
 public class GameMaster {
 
-    public Person[] people;
-    public int turn;
-    public int healthyCount;
-    public int infectedCount;
-    public int diseasedCount;
+    private Person[] people;
+    private int turn;
+    private int healthyCount;
+    private int infectedCount;
+    private int diseasedCount;
+
+    public PrintStream out;
 
     public GameMaster(int healthyCount, int infectedCount, int diseasedCount) {
         this.healthyCount = healthyCount;
@@ -38,11 +41,11 @@ public class GameMaster {
     }
 
     public void turn() {
-
+        this.playTurns(1);
     }
 
     public void playTurns(int turns) {
-        System.out.println(this);
+        out.println(this);
         for (int i = 0; i < turns; i++) {
             this.turn++;
             PairGenerator pairGenerator = new PairGenerator(this.getPeople());
@@ -55,7 +58,13 @@ public class GameMaster {
                 person[1].setStatus(HealthState.getNewStatus(person[1], person[0]));
                 incrementCount(person[1].getStatus());
             }
-            System.out.println(this);
+            if (pairGenerator.hasLeftOver()) {
+                Person leftOver = pairGenerator.getLeftOver();
+                decrementCount(leftOver.getStatus());
+                leftOver.setStatus(HealthState.getNewStatus(leftOver, Person.LEFTOVER_BUDDY));
+                incrementCount(leftOver.getStatus());
+            }
+            out.println(this);
         }
     }
 
@@ -69,12 +78,13 @@ public class GameMaster {
                 break;
             case DISEASED:
                 this.diseasedCount--;
-                System.err.println("Something went wrong because there's a diseased person. Someone has been brought back to life.");
+                System.err.println(
+                        "Something went wrong because there's a diseased person. Someone has been brought back to life.");
                 break;
         }
     }
 
-    public void incrementCount(HealthState healthState){
+    public void incrementCount(HealthState healthState) {
         switch (healthState) {
             case HEALTHY:
                 this.healthyCount++;
@@ -87,6 +97,14 @@ public class GameMaster {
                 break;
         }
     }
+
+    /**
+     * @param out the out to set
+     */
+    public void setOut(PrintStream out) {
+        this.out = out;
+    }
+
     /**
      * @return the diseasedCount
      */
@@ -156,14 +174,14 @@ public class GameMaster {
         // Person[][] persons = pairGenerator.getPairs();
 
         // for (Person[] persons2 : persons) {
-        //     for (Person persons3 : persons2) {
-        //         System.out.println(persons3);
-        //     }
-        //     System.out.println("---");
+        // for (Person persons3 : persons2) {
+        // System.out.println(persons3);
+        // }
+        // System.out.println("---");
         // }
         // if (pairGenerator.hasLeftOver()) {
-        //     System.out.println("Leftover:");
-        //     System.out.println(pairGenerator.getLeftOver());
+        // System.out.println("Leftover:");
+        // System.out.println(pairGenerator.getLeftOver());
         // }
 
         gameMaster.playTurns(1000);

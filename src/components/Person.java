@@ -5,6 +5,8 @@ package components;
  */
 public class Person {
 
+    public final static Person LEFTOVER_BUDDY = new Person(HealthState.HEALTHY);
+
     public static int amount = 0;
     public int id;
     private HealthState status;

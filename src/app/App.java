@@ -7,6 +7,8 @@ public class App {
         System.out.println("Hello Java");
         GameMasterCSV gameMasterCSV = new GameMasterCSV(1000000, 10, 0);
 
-        gameMasterCSV.playTurns(1000);
+        gameMasterCSV.playTurns(500);
+
+        System.out.println("Done!");
     }
 }
