@@ -1,5 +1,7 @@
 package components;
 
+import java.util.Scanner;
+
 /**
  * GameMaster
  */
@@ -137,22 +139,31 @@ public class GameMaster {
     }
 
     public static void main(String[] args) {
-        GameMaster gameMaster = new GameMaster(1000, 5, 0);
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Wie viele Gesunde soll es geben?");
+        int healthyCount = sc.nextInt();
+        System.out.println("Wie viele Kranke soll es geben?");
+        int infectedCount = sc.nextInt();
+        System.out.println("Wie viele Tote soll es bereits geben?");
+        int diseasedCount = sc.nextInt();
+        sc.close();
+
+        GameMaster gameMaster = new GameMaster(healthyCount, infectedCount, diseasedCount);
         System.out.println(gameMaster);
-        PairGenerator pairGenerator = new PairGenerator(gameMaster.getPeople());
+        // PairGenerator pairGenerator = new PairGenerator(gameMaster.getPeople());
 
-        Person[][] persons = pairGenerator.getPairs();
+        // Person[][] persons = pairGenerator.getPairs();
 
-        for (Person[] persons2 : persons) {
-            for (Person persons3 : persons2) {
-                System.out.println(persons3);
-            }
-            System.out.println("---");
-        }
-        if (pairGenerator.hasLeftOver()) {
-            System.out.println("Leftover:");
-            System.out.println(pairGenerator.getLeftOver());
-        }
+        // for (Person[] persons2 : persons) {
+        //     for (Person persons3 : persons2) {
+        //         System.out.println(persons3);
+        //     }
+        //     System.out.println("---");
+        // }
+        // if (pairGenerator.hasLeftOver()) {
+        //     System.out.println("Leftover:");
+        //     System.out.println(pairGenerator.getLeftOver());
+        // }
 
         gameMaster.playTurns(1000);
     }
