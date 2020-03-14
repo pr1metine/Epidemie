@@ -1,6 +1,7 @@
 package components;
 
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.Scanner;
 
 /**
@@ -38,17 +39,25 @@ public class PandemicSim {
             this.turn++;
             PairGenerator pairGenerator = new PairGenerator(this.getPeople());
 
-            for (Person[] person : pairGenerator.getPairs()) {
-                decrementCount(person[0].getStatus());
-                person[0].setStatus(HealthStatus.getNewStatus(person[0], person[1]));
-                incrementCount(person[0].getStatus());
-                decrementCount(person[1].getStatus());
-                person[1].setStatus(HealthStatus.getNewStatus(person[1], person[0]));
-                incrementCount(person[1].getStatus());
-            }
+            // TODO: implementiere parallele Streams
+            Arrays.stream(pairGenerator.getPairs()).forEach((person) -> {
+                try {
+                    this.decrementCount(person[0].getStatus());
+                    person[0].setStatus(HealthStatus.getNewStatus(person[0], person[1]));
+                    this.incrementCount(person[0].getStatus());
+                    this.decrementCount(person[1].getStatus());
+                    person[1].setStatus(HealthStatus.getNewStatus(person[1], person[0]));
+                    this.incrementCount(person[1].getStatus());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.err.println(person[0] + ", " + person[1] + ", turn: " + this.turn);
+                    System.exit(1);
+                }
+            });
+            
             if (pairGenerator.hasLeftOver()) {
                 Person leftOver = pairGenerator.getLeftOver();
-                decrementCount(leftOver.getStatus());
+                this.decrementCount(leftOver.getStatus());
                 leftOver.setStatus(HealthStatus.getNewStatus(leftOver, Person.LEFTOVER_BUDDY));
                 incrementCount(leftOver.getStatus());
             }
