@@ -6,7 +6,7 @@ import java.util.Scanner;
 /**
  * GameMaster
  */
-public class GameMaster {
+public class PandemicSim {
 
     private Person[] people;
     private int turn;
@@ -16,12 +16,12 @@ public class GameMaster {
 
     public PrintStream out;
 
-    public GameMaster() {
+    public PandemicSim() {
         this.readCount();
         this.initPeople();
     }
 
-    public GameMaster(int healthyCount, int infectedCount, int diseasedCount) {
+    public PandemicSim(int healthyCount, int infectedCount, int diseasedCount) {
         this.setHealthyCount(healthyCount);
         this.setInfectedCount(infectedCount);
         this.setDiseasedCount(diseasedCount);
@@ -40,16 +40,16 @@ public class GameMaster {
 
             for (Person[] person : pairGenerator.getPairs()) {
                 decrementCount(person[0].getStatus());
-                person[0].setStatus(HealthState.getNewStatus(person[0], person[1]));
+                person[0].setStatus(HealthStatus.getNewStatus(person[0], person[1]));
                 incrementCount(person[0].getStatus());
                 decrementCount(person[1].getStatus());
-                person[1].setStatus(HealthState.getNewStatus(person[1], person[0]));
+                person[1].setStatus(HealthStatus.getNewStatus(person[1], person[0]));
                 incrementCount(person[1].getStatus());
             }
             if (pairGenerator.hasLeftOver()) {
                 Person leftOver = pairGenerator.getLeftOver();
                 decrementCount(leftOver.getStatus());
-                leftOver.setStatus(HealthState.getNewStatus(leftOver, Person.LEFTOVER_BUDDY));
+                leftOver.setStatus(HealthStatus.getNewStatus(leftOver, Person.LEFTOVER_BUDDY));
                 incrementCount(leftOver.getStatus());
             }
             out.println(this);
@@ -63,15 +63,15 @@ public class GameMaster {
         int globalIndex = 0;
 
         for (int i = 0; i < healthyCount; i++, globalIndex++) {
-            people[globalIndex] = new Person(HealthState.HEALTHY);
+            people[globalIndex] = new Person(HealthStatus.HEALTHY);
         }
 
         for (int i = 0; i < infectedCount; i++, globalIndex++) {
-            people[globalIndex] = new Person(HealthState.INFECTED);
+            people[globalIndex] = new Person(HealthStatus.INFECTED);
         }
 
         for (int i = 0; i < diseasedCount; i++, globalIndex++) {
-            people[globalIndex] = new Person(HealthState.DISEASED);
+            people[globalIndex] = new Person(HealthStatus.DISEASED);
         }
     }
 
@@ -107,7 +107,7 @@ public class GameMaster {
         this.infectedCount = infectedCount >= 0 ? infectedCount : 0;
     }
 
-    public void decrementCount(HealthState healthState) {
+    public void decrementCount(HealthStatus healthState) {
         switch (healthState) {
             case HEALTHY:
                 this.setHealthyCount(this.getHealthyCount() - 1);
@@ -123,7 +123,7 @@ public class GameMaster {
         }
     }
 
-    public void incrementCount(HealthState healthState) {
+    public void incrementCount(HealthStatus healthState) {
         switch (healthState) {
             case HEALTHY:
                 this.healthyCount++;
@@ -173,7 +173,7 @@ public class GameMaster {
         Person[] notDiseasedPeople = new Person[people.length - diseasedCount];
 
         for (int i = 0, iDiseased = 0; i < people.length; i++) {
-            if (people[i].getStatus() != HealthState.DISEASED) {
+            if (people[i].getStatus() != HealthStatus.DISEASED) {
                 notDiseasedPeople[iDiseased] = people[i];
                 iDiseased++;
             }
@@ -198,7 +198,7 @@ public class GameMaster {
 
     public static void main(String[] args) {
 
-        GameMaster gameMaster = new GameMaster();
+        PandemicSim gameMaster = new PandemicSim();
         System.out.println(gameMaster);
         // PairGenerator pairGenerator = new PairGenerator(gameMaster.getPeople());
 

@@ -6,14 +6,14 @@ import java.io.PrintStream;
 /**
  * GameMasterCSV
  */
-public class GameMasterCSV extends GameMaster {
+public class PandemicSim_CSVOutput extends PandemicSim {
 
-    public GameMasterCSV(int healthy, int infected, int diseased) {
+    public PandemicSim_CSVOutput(int healthy, int infected, int diseased) {
         super(healthy, infected, diseased);
         this.setupStream();
     }
 
-    public GameMasterCSV(){
+    public PandemicSim_CSVOutput(){
         super();
         this.setupStream();
     }

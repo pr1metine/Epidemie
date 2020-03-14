@@ -5,22 +5,22 @@ package components;
  */
 public class Person {
 
-    public final static Person LEFTOVER_BUDDY = new Person(HealthState.HEALTHY);
+    public final static Person LEFTOVER_BUDDY = new Person(HealthStatus.HEALTHY);
 
     public static int amount = 0;
     public int id;
-    private HealthState status;
+    private HealthStatus status;
 
-    public Person(HealthState status){
+    public Person(HealthStatus status){
         this.status = status;
         this.id = amount++;
     }
 
-    public HealthState getStatus(){
+    public HealthStatus getStatus(){
         return this.status;
     }
 
-    public void setStatus(HealthState status){
+    public void setStatus(HealthStatus status){
         this.status = status;
     }
 

@@ -1,11 +1,11 @@
 package app;
 
-import components.GameMasterCSV;
+import components.PandemicSim_CSVOutput;
 
 public class App {
     public static void main(String[] args) throws Exception {
         System.out.println("Hello Java");
-        GameMasterCSV gameMasterCSV = new GameMasterCSV();
+        PandemicSim_CSVOutput gameMasterCSV = new PandemicSim_CSVOutput();
 
         System.out.println("Daten werden berechnet. Es dauert möglicherweise etwas.");
 

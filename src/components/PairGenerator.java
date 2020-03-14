@@ -65,7 +65,7 @@ public class PairGenerator {
     }
 
     public static void main(String[] args) {
-        Person[] persons = {new Person(HealthState.INFECTED), new Person(HealthState.HEALTHY), new Person(HealthState.DISEASED)};
+        Person[] persons = {new Person(HealthStatus.INFECTED), new Person(HealthStatus.HEALTHY), new Person(HealthStatus.DISEASED)};
         PairGenerator pairGenerator = new PairGenerator(persons);
         Person[][] persons2 = pairGenerator.pairs;
         System.out.println("Hello World");
