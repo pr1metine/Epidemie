@@ -20,18 +20,22 @@ public class PandemicSim_CSVOutput extends PandemicSim {
 
     public void setupStream() {
         try {
-            this.setOut(new PrintStream("data.csv"));
+            this.setPrintStream(new PrintStream("data.csv"));
         } catch (FileNotFoundException e) {
             System.err.println(
                     "Datei wurde nicht gefunden, das müsste aber überhaupt kein Problem sein, da eine neue Datei erstellt werden sollte...");
         }
-        out.println("Runde,Anzahl aller Gesunden,Anzahl aller Kranken,Anzahl aller Toten");
+        out.println("Runde\tAnzahl aller Gesunden\tAnzahl aller Kranken\tAnzahl aller Toten");
 
     }
 
     @Override
     public String toString() {
-        return this.getTurn() + "," + this.getHealthyCount() + "," + this.getInfectedCount() + ","
+        return this.getTurn() + "\t" + this.getHealthyCount() + "\t" + this.getInfectedCount() + "\t"
                 + this.getDiseasedCount();
+    }
+
+    public static void csv(PandemicSim pSim) {
+        System.out.println(pSim.getTurn() + "," + pSim.getHealthyCount() + "," + pSim.getInfectedCount() + "," + pSim.getDiseasedCount());
     }
 }

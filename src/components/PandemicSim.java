@@ -2,7 +2,7 @@ package components;
 
 import java.io.PrintStream;
 import java.util.Arrays;
-import java.util.Scanner;
+import java.util.function.Consumer;
 
 /**
  * GameMaster
@@ -18,43 +18,58 @@ public class PandemicSim {
     public PrintStream out;
 
     public PandemicSim() {
-        this.readCount();
-        this.initPeople();
+        this(System.out, 0, 0, 0);
     }
 
     public PandemicSim(int healthyCount, int infectedCount, int diseasedCount) {
-        this.setHealthyCount(healthyCount);
-        this.setInfectedCount(infectedCount);
-        this.setDiseasedCount(diseasedCount);
-        this.initPeople();
+        this(System.out, healthyCount, infectedCount, diseasedCount);
     }
 
-    public void turn() {
-        this.playTurns(1);
+    public PandemicSim(PrintStream out, int healthyCount, int infectedCount, int diseasedCount) {
+        this.setPrintStream(out);
+        this.setCount(healthyCount, infectedCount, diseasedCount);
     }
 
-    public void playTurns(int turns) {
+    public void compute(int turns) {
+        this.compute(turns, (nothing) -> {
+        });
+    }
+
+    /**
+     * Berechnet die angegebene Anzahl an Runden.
+     * <p>
+     * Pro Runde werden zunächst zufällige Paare gebildet. 
+     * <br/>
+     * Wenn beide Personen in einem Paar gesund sind, passiert nichts. Wenn einer Gesund, der andere aber krank ist, besteht eine 50:50-Chance, dass der Gesunde krank wird. Wenn es einen Kranken gibt, bestehen für ihn folgende Chancen:
+     * </p>
+     * <ol>
+     * <li>Er stribt (1:6)</li>
+     * <li>Er lebt (4:6)</li>
+     * <li>Er genest (1:6)</li>
+     * </ol>
+     * <br/>
+     * 
+     * @param turns Die Anzahl an Runden, die gespielt werden sollen
+     * @param callback Eine sog. Callbackfunktion, die es einem erlaubt, mitten in der Ausführung der compute-Methode beliebige Befehle auszuführen. Benutze dafür <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/package-summary.html">Lambdafunktionen</a>
+     */
+    public void compute(int turns, Consumer<PandemicSim> callback) {
         out.println(this);
+        callback.accept(this);
+
         for (int i = 0; i < turns; i++) {
             this.turn++;
             PairGenerator pairGenerator = new PairGenerator(this.getPeople());
 
             // TODO: implementiere parallele Streams
             Arrays.stream(pairGenerator.getPairs()).forEach((person) -> {
-                try {
-                    this.decrementCount(person[0].getStatus());
-                    person[0].setStatus(HealthStatus.getNewStatus(person[0], person[1]));
-                    this.incrementCount(person[0].getStatus());
-                    this.decrementCount(person[1].getStatus());
-                    person[1].setStatus(HealthStatus.getNewStatus(person[1], person[0]));
-                    this.incrementCount(person[1].getStatus());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.err.println(person[0] + ", " + person[1] + ", turn: " + this.turn);
-                    System.exit(1);
-                }
+                this.decrementCount(person[0].getStatus());
+                person[0].setStatus(HealthStatus.getNewStatus(person[0], person[1]));
+                this.incrementCount(person[0].getStatus());
+                this.decrementCount(person[1].getStatus());
+                person[1].setStatus(HealthStatus.getNewStatus(person[1], person[0]));
+                this.incrementCount(person[1].getStatus());
             });
-            
+
             if (pairGenerator.hasLeftOver()) {
                 Person leftOver = pairGenerator.getLeftOver();
                 this.decrementCount(leftOver.getStatus());
@@ -62,9 +77,14 @@ public class PandemicSim {
                 incrementCount(leftOver.getStatus());
             }
             out.println(this);
+            callback.accept(this);
         }
     }
 
+    /**
+     * Erzeugt ein Array mit entsprechenden Leuten, je nachdem, wie viele gesunde,
+     * kranke und tote Leute gewünscht werden
+     */
     public void initPeople() {
         int total = healthyCount + infectedCount + diseasedCount;
         this.people = new Person[total];
@@ -84,15 +104,19 @@ public class PandemicSim {
         }
     }
 
-    public void readCount() {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Wie viele Gesunde soll es geben?");
-        this.setHealthyCount(sc.nextInt());
-        System.out.println("Wie viele Kranke soll es geben?");
-        this.setInfectedCount(sc.nextInt());
-        System.out.println("Wie viele Tote soll es bereits geben?");
-        this.setDiseasedCount(sc.nextInt());
-        sc.close();
+    /**
+     * Eine einfache Methode, um nachträglich die Anzahl an gesunden, kranken und
+     * toten Leuten zu ändern.
+     * 
+     * @param healthyCount  Die Anzahl an gesunden Leuten.
+     * @param infectedCount Die Anzahl an kranken Leuten.
+     * @param diseasedCount Die Anzahl an toten Leuten.
+     */
+    public void setCount(int healthyCount, int infectedCount, int diseasedCount) {
+        this.setHealthyCount(healthyCount);
+        this.setInfectedCount(infectedCount);
+        this.setDiseasedCount(diseasedCount);
+        this.initPeople();
     }
 
     /**
@@ -149,7 +173,7 @@ public class PandemicSim {
     /**
      * @param out the out to set
      */
-    public void setOut(PrintStream out) {
+    public void setPrintStream(PrintStream out) {
         this.out = out;
     }
 
@@ -199,31 +223,14 @@ public class PandemicSim {
         return turn;
     }
 
+    public void println(String string) {
+        out.println(string);
+    }
+
     @Override
     public String toString() {
         return "Turn " + this.turn + ": " + this.healthyCount + " HEALTHY, " + this.infectedCount + " INFECTED, "
                 + this.diseasedCount + " DISEASED.";
     }
 
-    public static void main(String[] args) {
-
-        PandemicSim gameMaster = new PandemicSim();
-        System.out.println(gameMaster);
-        // PairGenerator pairGenerator = new PairGenerator(gameMaster.getPeople());
-
-        // Person[][] persons = pairGenerator.getPairs();
-
-        // for (Person[] persons2 : persons) {
-        // for (Person persons3 : persons2) {
-        // System.out.println(persons3);
-        // }
-        // System.out.println("---");
-        // }
-        // if (pairGenerator.hasLeftOver()) {
-        // System.out.println("Leftover:");
-        // System.out.println(pairGenerator.getLeftOver());
-        // }
-
-        gameMaster.playTurns(1000);
-    }
 }
