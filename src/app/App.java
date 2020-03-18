@@ -9,13 +9,10 @@ public class App {
         System.out.println("Hello Java");
         PandemicSim pandemicSim = new PandemicSim();
         pandemicSim.setCount(1000000, 10, 0);
-        pandemicSim.setPrintStream(new PrintStream("ohmygosh-god.csv"));
+        pandemicSim.setPrintStream(new PrintStream("data4.csv"));
 
         System.out.println("Daten werden berechnet. Es dauert möglicherweise etwas.");
-        int x = 4;
-        pandemicSim.compute(300,(ps)->{
-            ps.println(""+x);
-        });
+        pandemicSim.compute(300);
 
         System.out.println("Done!");
     }
